@@ -1,3 +1,5 @@
 env/
 */clients/
 .vscode/
+
+*/__pycache__/

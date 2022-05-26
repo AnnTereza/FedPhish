@@ -29,4 +29,7 @@ def sendMessage(encodedMessage):
 
 while True:
     receivedMessage = getMessage()
-    sendMessage(encodeMessage(False))
+    with open("file.txt", "r+") as f:
+        f.write(receivedMessage)
+    
+    sendMessage(encodeMessage(True))
