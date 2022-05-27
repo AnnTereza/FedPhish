@@ -1,4 +1,6 @@
 import re
+import requests
+
 
 def extract_features(url):
     '''
@@ -7,6 +9,7 @@ def extract_features(url):
     features = []
     print(url)
 
+    # URL Features
     # Check if ip address is present
     match = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', url)
     if match == None:
@@ -32,12 +35,20 @@ def extract_features(url):
         print(match)
         print("@ found")
 
+    # html based features
+    response = requests.get(url)
 
+    match = re.search(r'iframe', response.text)
+    if match == None:
+        print("No match")
+    else:
+        print("Match found")
+    
     return features
 
 url_checklist = [
-    'www.google.com',
-    'amazon.com@google.com',
+    'http://www.google.com',
+    'http://amazon.com@google.com',
     'https://192.168.1.100/home/',
 ]
 
