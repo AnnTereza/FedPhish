@@ -1,6 +1,10 @@
-function logTabs(tabs) {
-    console.log(tabs)
+function notify(message){
+  console.log(message)
+  if (message.isPhishing == true){
+    alert("Phishing Detected. \nStopped loading page.")
   }
-  
-  browser.tabs.query({currentWindow: true}, logTabs)
-  
+}
+
+browser.runtime.onMessage.addListener(notify);
+
+console.log("loaded")

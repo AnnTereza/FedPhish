@@ -4,8 +4,8 @@ import sys
 import json
 import struct
 
-from nn import classify
-from feature_extraction import extract_features
+#from nn import classify
+#from feature_extraction import extract_features
 
 # Python 3.x version
 # Read a message from stdin and decode it.
@@ -33,7 +33,7 @@ def sendMessage(encodedMessage):
 while True:
     url = getMessage()
 
-    features = extract_features(url)
-    pred = classify(features)
-    
-    sendMessage(encodeMessage(pred))
+    # features = extract_features(url)
+    # pred = classify(features)
+
+    sendMessage(encodeMessage(True))

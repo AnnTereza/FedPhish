@@ -1,5 +1,6 @@
 async function listener(requestDetails) {
-  console.log(requestDetails.url);
+  console.log(requestDetails.tabId);
+  console.log(requestDetails);
   var isPhishing = false;
 
   await browser.runtime.sendNativeMessage(
@@ -10,8 +11,15 @@ async function listener(requestDetails) {
     isPhishing = response;
   });
 
+  console.log("Native comms complete");
+
   if (isPhishing === true) {
     console.log("Phishing detected");
+    // browser.tabs.executeScript({
+    //   code: `alert("Phishing Detected");`
+    // });
+    await browser.tabs.create({url: "phishing_detected.html"});
+
     return {
       cancel: true
     }

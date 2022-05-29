@@ -1,56 +1,87 @@
 import re
 import requests
+import whois
+import time
+
+from helpers import *
+
 
 
 def extract_features(url):
     '''
         Extract features from the given url
     '''
-    features = []
     print(url)
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"}
 
-    # URL Features
-    # Check if ip address is present
-    match = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', url)
-    if match == None:
-        print('ip is not present')
-    else:
-        print(match)
-        print("ip is  present")
+    url = standardize(url)
+
+    url_len = lenCategory(url)
+    have_dash = haveDash(url)
+    have_multi_subdomains = haveMultiSubDomains(url)
+    have_double_slash = haveDoubleSlash(url)
+    have_at, url = haveAtSign(url)
+
+    url = standardize(url)
+    domain = urlparse(url)
+    dns_record = 0
+    try:
+        who_is = whois.whois(domain.netloc)
+    except:
+        dns_record = 1
     
-    # url length
-    match = len(url)
-    if match < 54:
-        print("legitimate", match)
-    elif match >= 54 and match <= 75:
-        print("suspiuos", match)
-    else:
-        print("phishing", match)
+    try:
+        response = requests.get(url, headers=headers)
+        if response.text:
+            ssl_final_state = 0
+    except Exception as e:
+        ssl_final_state = 2
+        response = ""
 
-    # Check if @ is present
-    match = re.search(r'@', url)
-    if re.search(r'@', url) == None:
-        print("@  not found")
-    else:
-        print(match)
-        print("@ found")
-
-    # html based features
-    response = requests.get(url)
-
-    match = re.search(r'iframe', response.text)
-    if match == None:
-        print("No match")
-    else:
-        print("Match found")
+    try:
+        soup = BeautifulSoup(response.text, 'html.parser')
+    except Exception as e:
+        soup = -999
     
+    have_ip = havingIP(url)
+    have_https = haveHTTPS(url)
+
+    if dns_record == 1:
+        reg_len = 1
+    else:
+        reg_len = getRegLen(who_is)
+    
+    favicon = genuineFavicon(soup, domain)
+    external_loading = externalLoading(soup, url, domain)
+    anchor_urls = anchorURLs(soup, url, domain)
+    links_in_tags = linksInTags(soup, url, domain)
+    sfh = SFH(soup, url, domain)
+    submitting_to_email = submittingToEmail(response)
+    redirect_count = redirectCount(response)
+    on_mouse_over = onMouseOver(response)
+    right_click = rightClick(response)
+    popup_present = popUp(response)
+    iframe_present = iframe(response)
+
+    features = [
+        have_ip, url_len, have_at, have_double_slash, have_dash,
+        have_multi_subdomains, ssl_final_state, reg_len, favicon,
+        have_https, external_loading, anchor_urls, links_in_tags, 
+        sfh, submitting_to_email, redirect_count, on_mouse_over,
+        right_click, popup_present, iframe_present, dns_record
+
+    ]
+
     return features
 
+start_time = time.time()
 url_checklist = [
-    'http://www.google.com',
-    'http://amazon.com@google.com',
-    'https://192.168.1.100/home/',
+    #'https://freecodecamp.org',
+    #'https://linkedin.com', 
+    #'https://sphnere-finance.com/dashboard/extensions/=nkbihrfbeogaeaoehlefnkodbefgpgknn/metamask.html',
+    'http://xavier-net.gq/?login=do'
 ]
 
 for url in url_checklist:
     print(extract_features(url))
+print("--- %s seconds ---" % (time.time() - start_time))
