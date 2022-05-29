@@ -28,15 +28,18 @@ def classify(features):
   '''
 
   # Load the model 
-  pnn = T.load("PhishingClassifier1")
+  pnn = T.load("PhishingClassifier")
 
   # Create tensor
   features = T.tensor(features).double()
 
   # Classifiy the website
-  if T.round(pnn(features))[0] == 0:
-    pred = True
-  else:
+  pred = pnn(features)
+  pred = T.round(pred)[0]
+  
+  if pred == 0:
     pred = False
+  else:
+    pred = True
   
   return pred

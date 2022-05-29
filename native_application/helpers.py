@@ -16,7 +16,7 @@ def standardize(url):
 def haveAtSign(url):
     # Check if @ is present
     match = re.search(r'@', url)
-    if re.search(r'@', url) is None:
+    if match is None:
         return 0, url
     else:
         return 1, url[match.start()+1:]
@@ -51,8 +51,8 @@ def haveDoubleSlash(url):
     return have_double_slash
 
 
-def haveDash(url):
-    if '-' not in urlparse(url).netloc:
+def haveDash(domain_name):
+    if '-' not in domain_name:
         have_dash = 0
     else:
         have_dash = 1
@@ -62,9 +62,9 @@ def haveDash(url):
 
 def haveHTTPS(url):
     if 'https://' in url:
-        return 1
-    else:
         return 0
+    else:
+        return 1
 
 
 def haveMultiSubDomains(url):
@@ -152,7 +152,7 @@ def externalLoading(soup, url, domain):
             else :
                 return 2
         except:
-            return 0
+            return 2
 
 
 def anchorURLs(soup, url, domain):
@@ -172,7 +172,7 @@ def anchorURLs(soup, url, domain):
         try:
             percentage = unsafe / float(i) * 100
         except:
-            return 0
+            return 2
 
         if percentage < 31.0:
             return 0
@@ -202,7 +202,7 @@ def linksInTags(soup, url, domain):
         try:
             percentage = success / float(i) * 100
         except:
-            return 0
+            return 2
 
         if percentage < 17.0 :
            return 0
