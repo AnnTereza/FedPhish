@@ -1,7 +1,11 @@
 async function listener(requestDetails) {
-  console.log(requestDetails.tabId);
   console.log(requestDetails);
   var isPhishing = false;
+
+  if (typeof requestDetails.documentUrl != "undefined") {
+    console.log()
+    return {}
+  }
 
   await browser.runtime.sendNativeMessage(
     "fedphish",
